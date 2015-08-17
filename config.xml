@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+    <widget xmlns   = "http://www.w3.org/ns/widgets"
+        xmlns:gap   = "http://phonegap.com/ns/1.0"
+        id          = "com.amgonzalez.CostesApp"
+        versionCode = "10" 
+        version     = "1.0.0" >
+	<name>CostesApp</name>
+	<description> Aplicacion para calcular los costes de un presupuesto</description>
+	<author href="https://es.linkedin.com/in/amgonzalez91" email="antoniomg91@gmail.com">
+		Antonio Martinez Gonzalez
+	</author>
+</widget>
