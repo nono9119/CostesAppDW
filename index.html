@@ -188,6 +188,32 @@
 		Ver presupuestos
 -->
 <div data-role="page" id="vPrespuestos">
+	<div data-role="header" data-position="inline">
+    	<h1>Presupuestos</h1>
+    </div>
+    <div data-role="content">
+		<div id="elements">
+       		<table align="left">
+        		<thead>
+           			<tr>
+                    	<th scope="col">Id</th>
+             			<th scope="col">Nombre</th>
+           			</tr>
+        		</thead>
+            	<tbody id="listaPresupuestos">
+            		<tr>
+                		<td colspan="2">No hay elementos para mostrar</td>
+            		</tr>
+            	</tbody>
+                <tfoot>
+        <button type="button" onClick="listarPresupuestos();">Actualizar</button>
+        </tfoot>
+        	</table>
+        </div>
+	</div>
+    <div data-role="footer" data-position="inline">
+    	<h1><a href="#home" class="nosub">Salir</a></h1>
+    </div>
 </div>
 </body>
 </html>

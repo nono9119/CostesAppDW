@@ -26,20 +26,23 @@ function cargarBD() {
         // Una coleccion de objetos aqui es como una tabla
         // Coleccion Materiales
         materiales = active.createObjectStore("materiales",
-            { keyPath : 'id_material', autoIncrement : true });
-        //materiales.createIndex('by_material', 'id_material', { unique : true });
+            { keyPath : 'id', autoIncrement : false });
+        //materiales.createIndex('por_material', 'id', { unique : true });
         // Coleccion Mano de Obra
         mdObra = active.createObjectStore("mdobra",
-            { keyPath : 'id_mdobra', autoIncrement : true });
-        //mdObra = createIndex('by_mdobra', 'id_mdobra', { unique : true });
+            { keyPath : 'id', autoIncrement : false });
+        //mdObra = createIndex('por_mdobra', 'id', { unique : true });
         // Coleccion Presupuesto
         presupuesto = active.createObjectStore("presupuesto",
-            { keyPath : 'id_presupuesto', autoIncrement : true });
-        //presupuesto = createIndex('by_presupuesto', 'id_presupuesto', { unique : true });
+            { KeyPath : 'id', autoIncrement : false });
+        //presupuesto = createIndex('por_presupuesto', 'id', { unique : true });
     };
 
     dataBase.onsuccess = function (e) {
         alert('Base de datos cargada correctamente');
+		// Listo las tablas
+		listarMateriales();
+		listarPresupuestos();
     };
     dataBase.onerror = function (e)  {
         alert('Error cargando la base de datos');
@@ -134,8 +137,8 @@ function listarMateriales() {
 		if (result === null) {
         	return;
     	}
-		// si no es nulo lo agrego a materiales
-    	elements.push(result.value);
+		// si no es nulo lo agrego al array
+    	elements.push();
 		result.continue();
     };
 
@@ -152,7 +155,49 @@ function listarMateriales() {
         		</tr>';
         }
 
-        materiales = [];
+        elements = [];
         document.querySelector("#listaMateriales").innerHTML = outerHTML;
+    };
+}
+
+/***********************************************************************************************
+*** Listar presupuestos
+***********************************************************************************************/
+function listarPresupuestos() {
+	var active = dataBase.result;
+	var data = active.transaction(["presupuesto"], "readonly");
+	var object = data.objectStore("presupuesto");
+	
+	var elements = [];
+	var outerHTML = '';
+	object.openCursor().onsuccess = function (e) {
+		// Recupero el objeto
+		var result = e.target.result;
+		// Compruebo que no sea nulo
+		if (result === null) { 
+			return; 
+		}
+		// si no es nulo lo agrego al array
+    	//
+		if (result) {
+			// Muestro la id en el primer campo
+			outerHTML += '\n\
+        		<tr>\n\
+            		<td>' + result.key + '</td>';
+			elements.push(result.value);
+			// Listo en la tabla con el resto de campos
+			for (var key in elements) {
+				outerHTML += '\n\
+                	<td>' + elements[key].nombre + '</td>';
+    		}
+			outerHTML += '\n\</tr>';
+			elements = [];
+			result.continue();
+		}
+    };
+
+	// Listo en la tabla los elementos, aqui se añaden los campos a mostrar
+	data.oncomplete = function () {
+        document.querySelector("#listaPresupuestos").innerHTML = outerHTML;
     };
 }
