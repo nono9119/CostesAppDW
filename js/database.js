@@ -28,6 +28,7 @@ function cargarBD() {
         materiales = active.createObjectStore("materiales",
             { keyPath : 'id_material', autoIncrement : true });
         //materiales.createIndex('por_material', 'id', { unique : true });
+		materiales.createIndex('por_presupuesto', 'id_presupuesto', { unique : true });
         // Coleccion Mano de Obra
         mdObra = active.createObjectStore("mdobra",
             { keyPath : 'id_mdobra', autoIncrement : true });
@@ -90,11 +91,13 @@ function insertarMaterial() {
 				alert('Debes introducir un precio');
 			} else {
 				var prc_total = document.querySelector("#prc").value * document.querySelector("#cnt").value
+				var id_prspst = recuperarId();
 				var request = object.put({
    					material: document.querySelector("#mtr").value,
         			cantidad: document.querySelector("#cnt").value,
         			precio: document.querySelector("#prc").value,
-					precio_total: prc_total
+					precio_total: prc_total, 
+					id_presupuesto: id_prspst
     			});
 				// Si todo ha ido correcto pongo a cero el contenido de los campos y el valor de la variable
 				data.oncomplete = function (e) {
@@ -102,6 +105,7 @@ function insertarMaterial() {
         			document.querySelector("#cnt").value = '';
         			document.querySelector("#prc").value = '';
 					prc_total = null;
+					id_prspst = null;
         			alert('Objeto agregado correctamente');
 					window.location.href = '#materiales';
    				}
@@ -124,10 +128,9 @@ function crearPresupuesto() {
 		var data = active.transaction(["presupuestos"], "readwrite");
 		var object = data.objectStore("presupuestos");
 		var request = object.put({ nombre: nombre });
-		comprobarNombre(nombre);
-		//data.oncomplete = function (e) { alert('Objeto agregado correctamente'); }
-		//obtenerId(nombre);
-		//window.location.href = '#materiales';
+		data.oncomplete = function (e) { alert('Objeto agregado correctamente'); }
+		obtenerId(nombre);
+		window.location.href = '#materiales';
 	} else {
 		alert("Debe introducir un nombre para poder continuar");
 	}
@@ -136,6 +139,50 @@ function crearPresupuesto() {
 *** Listar materiales
 ***********************************************************************************************/
 function listarMateriales() {
+	// Igual que al agregar, recuperar conexion y abrir transaccion, pero esta vez en modo lectura
+	var active = dataBase.result;
+	var data = active.transaction(["materiales"], "readonly");
+	var object = data.objectStore("materiales");
+	
+	var elements = [];
+	// Ejecuto el openCursror en onsuccess porque quiero llevar a cabo la acción si 
+	// y sólo si se tiene éxito en el recorrido de la coleccion
+	object.openCursor().onsuccess = function (e) {
+		// Recupero el objeto
+		var result = e.target.result;
+		// Compruebo que no sea nulo
+		if (result === null) {
+        	return;
+    	}
+		// si no es nulo lo agrego al array
+    	elements.push();
+		result.continue();
+    };
+
+	// Listo en la tabla los elementos
+	data.oncomplete = function () {
+    	var outerHTML = '';
+		for (var key in elements) {
+			outerHTML += '\n\
+        		<tr>\n\
+            		<td>' + elements[key].cantidad + '</td>\n\
+                	<td>' + elements[key].material + '</td>\n\
+					<td>' + elements[key].precio + '</td>\n\
+                	<td>' + elements[key].precio_total + '</td>\n\
+					<td>' + elements[key].id_presupuesto + '</td>\n\
+        		</tr>';
+        }
+
+        elements = [];
+        document.querySelector("#listaMateriales").innerHTML = outerHTML;
+    };
+}
+
+/***********************************************************************************************
+*** Listar materiales por presupuesto
+***********************************************************************************************/
+function listarMateriales() {
+	var id_presupuesto = recuperarId();
 	// Igual que al agregar, recuperar conexion y abrir transaccion, pero esta vez en modo lectura
 	var active = dataBase.result;
 	var data = active.transaction(["materiales"], "readonly");
@@ -237,17 +284,5 @@ function obtenerId(nombre) {
 *** Recuperar la id del presupuesto del div
 ***********************************************************************************************/
 function recuperarId() {
-	return Integer(document.querySelector("#id_presupuesto").textContent);
-}
-/***********************************************************************************************
-*** Comprobar si ya existe el nombre en la BBDD
-***********************************************************************************************/
-function comprobarNombre(nombre) { 
-	var active = dataBase.result;
-	var data = active.transaction(["presupuestos"], "readonly");
-	var object = data.objectStore("presupuestos");
-	var index = object.index("por_nombre");
-	var request = index.get(String(nombre));
-	
-	request.onsuccess = function () { alert('Ese nombre ya existe en la base de datos') };
+	return document.querySelector("#id_presupuesto").textContent;
 }
