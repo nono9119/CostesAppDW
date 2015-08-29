@@ -26,16 +26,16 @@ function cargarBD() {
         // Una coleccion de objetos aqui es como una tabla
         // Coleccion Materiales
         materiales = active.createObjectStore("materiales",
-            { keyPath : 'id', autoIncrement : false });
+            { keyPath : 'id_material', autoIncrement : true });
         //materiales.createIndex('por_material', 'id', { unique : true });
         // Coleccion Mano de Obra
         mdObra = active.createObjectStore("mdobra",
-            { keyPath : 'id', autoIncrement : false });
+            { keyPath : 'id_mdobra', autoIncrement : true });
         //mdObra = createIndex('por_mdobra', 'id', { unique : true });
         // Coleccion Presupuesto
-        presupuesto = active.createObjectStore("presupuesto",
-            { KeyPath : 'id', autoIncrement : false });
-        //presupuesto = createIndex('por_presupuesto', 'id', { unique : true });
+        presupuestos = active.createObjectStore("presupuestos",
+            { keyPath : 'id_presupuesto', autoIncrement : true });
+        presupuestos.createIndex('por_nombre', 'nombre', { unique : true });
     };
 
     dataBase.onsuccess = function (e) {
@@ -48,6 +48,18 @@ function cargarBD() {
         alert('Error cargando la base de datos');
     };
 
+}
+function borrarDB() { 
+	var req = indexedDB.deleteDatabase("CostesAppDB");
+	req.onsuccess = function () {
+    	console.log("Deleted database successfully");
+	};
+	req.onerror = function () {
+    	console.log("Couldn't delete database");
+	};
+	req.onblocked = function () {
+    	console.log("Couldn't delete database due to the operation being blocked");
+	};
 }
 /***********************************************************************************************
 *** Insertar material
@@ -109,11 +121,13 @@ function crearPresupuesto() {
 	if (nombre.length > 0 || nombre.length <= 25) {
 		// Si ha introducido el nombre correctamente comienzo la insercion
 		var active = dataBase.result;
-		var data = active.transaction(["presupuesto"], "readwrite");
-		var object = data.objectStore("presupuesto");
+		var data = active.transaction(["presupuestos"], "readwrite");
+		var object = data.objectStore("presupuestos");
 		var request = object.put({ nombre: nombre });
-		data.oncomplete = function (e) { alert('Objeto agregado correctamente'); }
-		window.location.href = '#materiales';
+		comprobarNombre(nombre);
+		//data.oncomplete = function (e) { alert('Objeto agregado correctamente'); }
+		//obtenerId(nombre);
+		//window.location.href = '#materiales';
 	} else {
 		alert("Debe introducir un nombre para poder continuar");
 	}
@@ -159,14 +173,13 @@ function listarMateriales() {
         document.querySelector("#listaMateriales").innerHTML = outerHTML;
     };
 }
-
 /***********************************************************************************************
 *** Listar presupuestos
 ***********************************************************************************************/
 function listarPresupuestos() {
 	var active = dataBase.result;
-	var data = active.transaction(["presupuesto"], "readonly");
-	var object = data.objectStore("presupuesto");
+	var data = active.transaction(["presupuestos"], "readonly");
+	var object = data.objectStore("presupuestos");
 	
 	var elements = [];
 	var outerHTML = '';
@@ -200,4 +213,41 @@ function listarPresupuestos() {
 	data.oncomplete = function () {
         document.querySelector("#listaPresupuestos").innerHTML = outerHTML;
     };
+}
+/***********************************************************************************************
+*** Obtener la id del presupuesto en funcion del nombre
+***********************************************************************************************/
+function obtenerId(nombre) {
+	var active = dataBase.result;
+	var data = active.transaction(["presupuestos"], "readonly");
+	var object = data.objectStore("presupuestos");
+	var index = object.index("por_nombre");
+	var request = index.get(String(nombre));
+	
+	request.onsuccess = function () {
+        var result = request.result;
+		
+        if (result !== undefined) {
+			document.querySelector("#id_presupuesto").textContent = 
+				'' + result.id_presupuesto + '';
+        }
+    };
+}
+/***********************************************************************************************
+*** Recuperar la id del presupuesto del div
+***********************************************************************************************/
+function recuperarId() {
+	return Integer(document.querySelector("#id_presupuesto").textContent);
+}
+/***********************************************************************************************
+*** Comprobar si ya existe el nombre en la BBDD
+***********************************************************************************************/
+function comprobarNombre(nombre) { 
+	var active = dataBase.result;
+	var data = active.transaction(["presupuestos"], "readonly");
+	var object = data.objectStore("presupuestos");
+	var index = object.index("por_nombre");
+	var request = index.get(String(nombre));
+	
+	request.onsuccess = function () { alert('Ese nombre ya existe en la base de datos') };
 }

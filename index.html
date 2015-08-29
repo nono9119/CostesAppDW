@@ -7,6 +7,7 @@
 <script src="jquery-mobile/jquery-1.6.4.min.js" type="text/javascript"></script>
 <script src="jquery-mobile/jquery.mobile-1.0.min.js" type="text/javascript"></script>
 <script src="js/database.js" type="text/javascript"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, target-densitydpi=medium-dpi, user-scalable=0" />
 <!-- <script src="js/funciones.js" type="text/javascript"></script>-->
 <style type="text/css">   
 	a.nosub:link {   
@@ -27,7 +28,7 @@
     <div data-role="content">
 			<button type="button" onClick="crearPresupuesto();">Nuevo Presupuesto</button>
             <a href="#vPrespuestos" class="nosub"><button type="button">Ver presupuestos</button></a>
-			<a href="#" class="nosub"><button type="button">Salir</button></a>
+			<button type="button" onClick="borrarDB();">Salir</button>
     </div>
     <!-- Pie de pagina -->
     <div data-role="footer" data-position="inline" data-theme="a">
@@ -75,7 +76,7 @@
                 </tr>
         </table>
     </div>
-    <div data-role="footer" data-position="inline">
+    <div data-role="footer" data-position="inline" >
     	<h1><a href="#home" class="nosub">Atrás</a></h1>
     </div>
 </div>
@@ -215,5 +216,6 @@
     	<h1><a href="#home" class="nosub">Salir</a></h1>
     </div>
 </div>
+<div id="id_presupuesto">No id</div>
 </body>
 </html>
