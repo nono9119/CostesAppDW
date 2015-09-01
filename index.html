@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <title>CostesApp</title>
 <link href="jquery-mobile/jquery.mobile-1.0.min.css" rel="stylesheet" type="text/css"/>
-<script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
-<script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+<script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
 <script src="jquery-mobile/jquery-1.6.4.min.js" type="text/javascript"></script>
 <script src="jquery-mobile/jquery.mobile-1.0.min.js" type="text/javascript"></script>
 <script src="js/bbdd.js" type="text/javascript"></script>
@@ -24,8 +24,10 @@
 	</div>
     <!-- Botones de accion -->
     <div data-role="content">
-			<button type="button" onClick="">Nuevo Presupuesto</button>
-            <a href="#vPrespuestos" class="nosub"><button type="button">Ver presupuestos</button></a>
+			<button type="button" onClick="crearPresupuesto();">Nuevo Presupuesto</button>
+            <a href="#vPrespuestos" class="nosub">
+            	<button type="button" onClick="listarPresupuestos();">Ver presupuestos</button>
+           	</a>
 			<button type="button" onClick="">Salir</button>
     </div>
     <!-- Pie de pagina -->
@@ -191,7 +193,7 @@
     	<h1>Presupuestos</h1>
     </div>
     <div data-role="content">
-		<div id="elements">
+		<div>
        		<table align="left">
         		<thead>
            			<tr>
@@ -205,7 +207,7 @@
             		</tr>
             	</tbody>
                 <tfoot>
-        <button type="button" onClick="">Actualizar</button>
+        <button type="button" onClick="listarPresupuestos();">Actualizar</button>
         </tfoot>
         	</table>
         </div>
